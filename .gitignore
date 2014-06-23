@@ -1,5 +1,4 @@
 _tests/
 dist/
-src/
 node_modules/
 .idea/

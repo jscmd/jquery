@@ -38,7 +38,7 @@
     },
     "spm": {
         "alias": {
-            "$": "$"
+
         },
         "output": ["mockjax.js"]
     }
