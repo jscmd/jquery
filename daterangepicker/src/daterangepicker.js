@@ -1010,7 +1010,7 @@ define(function(require, exports, module) {
       return this;
     };
 
-  }(window.jQuery, window.moment);
+  }($, moment);
 
 
 });

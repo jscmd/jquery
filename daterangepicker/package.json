@@ -22,7 +22,8 @@
       "daterangepicker.js",
       "daterangepicker.css"
     ],
-    "alias": {},
+    "alias": {
+    },
     "devAlias": {},
     "engines": {}
   }
