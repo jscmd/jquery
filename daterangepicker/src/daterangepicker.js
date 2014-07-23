@@ -2,9 +2,9 @@ define(function(require, exports, module) {
   var $ = require('$');
   var moment = require('gallery/moment/2.5.1/moment');
   /**
-   * @version: 1.3.5
+   * @version: 1.3.8
    * @author: Dan Grossman http://www.dangrossman.info/
-   * @date: 2014-03-19
+   * @date: 2014-07-10
    * @copyright: Copyright (c) 2012-2014 Dan Grossman. All rights reserved.
    * @license: Licensed under Apache License v2.0. See http://www.apache.org/licenses/LICENSE-2.0
    * @website: http://www.improvely.com/
@@ -19,6 +19,9 @@ define(function(require, exports, module) {
       //element that triggered the date range picker
       this.element = $(element);
 
+      //tracks visible state
+      this.isShowing = false;
+
       //create the picker HTML object
       var DRPTemplate = '<div class="daterangepicker dropdown-menu">' +
         '<div class="calendar left"></div>' +
@@ -27,11 +30,11 @@ define(function(require, exports, module) {
         '<div class="range_inputs">' +
         '<div class="daterangepicker_start_input">' +
         '<label for="daterangepicker_start"></label>' +
-        '<input class="input-mini" type="text" name="daterangepicker_start" value="" disabled="disabled" />' +
+        '<input class="input-mini" type="text" name="daterangepicker_start" value="" readonly="readonly" />' +
         '</div>' +
         '<div class="daterangepicker_end_input">' +
         '<label for="daterangepicker_end"></label>' +
-        '<input class="input-mini" type="text" name="daterangepicker_end" value="" disabled="disabled" />' +
+        '<input class="input-mini" type="text" name="daterangepicker_end" value="" readonly="readonly" />' +
         '</div>' +
         '<button class="applyBtn" disabled="disabled"></button>&nbsp;' +
         '<button class="cancelBtn"></button>' +
@@ -43,7 +46,7 @@ define(function(require, exports, module) {
       if (typeof options !== 'object' || options === null)
         options = {};
 
-      this.parentEl = (typeof options === 'object' && options.parentEl && $(options.parentEl).length) || $(this.parentEl);
+      this.parentEl = (typeof options === 'object' && options.parentEl && $(options.parentEl).length) ? $(options.parentEl) : $(this.parentEl);
       this.container = $(DRPTemplate).appendTo(this.parentEl);
 
       this.setOptions(options, cb);
@@ -118,7 +121,7 @@ define(function(require, exports, module) {
         if (this.element.hasClass('pull-right'))
           this.opens = 'left';
 
-        this.buttonClasses = ['btn', 'btn-small'];
+        this.buttonClasses = ['btn', 'btn-small btn-sm'];
         this.applyClass = 'btn-success';
         this.cancelClass = 'btn-default';
 
@@ -385,6 +388,7 @@ define(function(require, exports, module) {
 
         this.updateView();
         this.updateCalendars();
+        this.updateInputText();
       },
 
       setEndDate: function(endDate) {
@@ -401,11 +405,12 @@ define(function(require, exports, module) {
 
         this.updateView();
         this.updateCalendars();
+        this.updateInputText();
       },
 
       updateView: function () {
-        this.leftCalendar.month.month(this.startDate.month()).year(this.startDate.year());
-        this.rightCalendar.month.month(this.endDate.month()).year(this.endDate.year());
+        this.leftCalendar.month.month(this.startDate.month()).year(this.startDate.year()).hour(this.startDate.hour()).minute(this.startDate.minute());
+        this.rightCalendar.month.month(this.endDate.month()).year(this.endDate.year()).hour(this.endDate.hour()).minute(this.endDate.minute());
         this.updateFormInputs();
       },
 
@@ -424,11 +429,16 @@ define(function(require, exports, module) {
         if (!this.element.is('input')) return;
         if (!this.element.val().length) return;
 
-        var dateString = this.element.val().split(this.separator);
-        var start = moment(dateString[0], this.format);
-        var end = moment(dateString[1], this.format);
+        var dateString = this.element.val().split(this.separator),
+          start = null,
+          end = null;
 
-        if (this.singleDatePicker) {
+        if(dateString.length === 2) {
+          start = moment(dateString[0], this.format);
+          end = moment(dateString[1], this.format);
+        }
+
+        if (this.singleDatePicker || start === null || end === null) {
           start = moment(this.element.val(), this.format);
           end = start;
         }
@@ -497,14 +507,23 @@ define(function(require, exports, module) {
       },
 
       show: function (e) {
+        if (this.isShowing) return;
+
         this.element.addClass('active');
         this.container.show();
         this.move();
 
-        $(document).on('click.daterangepicker', $.proxy(this.outsideClick, this));
-        // also explicitly play nice with Bootstrap dropdowns, which stopPropagation when clicking them
-        $(document).on('click.daterangepicker', '[data-toggle=dropdown]', $.proxy(this.outsideClick, this));
+        // Create a click proxy that is private to this instance of datepicker, for unbinding
+        this._outsideClickProxy = $.proxy(function (e) { this.outsideClick(e); }, this);
+        // Bind global datepicker mousedown for hiding and
+        $(document)
+          .on('mousedown.daterangepicker', this._outsideClickProxy)
+          // also explicitly play nice with Bootstrap dropdowns, which stopPropagation when clicking them
+          .on('click.daterangepicker', '[data-toggle=dropdown]', this._outsideClickProxy)
+          // and also close when focus changes to outside the picker (eg. tabbing between controls)
+          .on('focusin.daterangepicker', this._outsideClickProxy);
 
+        this.isShowing = true;
         this.element.trigger('show.daterangepicker', this);
       },
 
@@ -521,6 +540,13 @@ define(function(require, exports, module) {
       },
 
       hide: function (e) {
+        if (!this.isShowing) return;
+
+        $(document)
+          .off('mousedown.daterangepicker')
+          .off('click.daterangepicker', '[data-toggle=dropdown]')
+          .off('focusin.daterangepicker');
+
         this.element.removeClass('active');
         this.container.hide();
 
@@ -530,7 +556,7 @@ define(function(require, exports, module) {
         this.oldStartDate = this.startDate.clone();
         this.oldEndDate = this.endDate.clone();
 
-        $(document).off('click.daterangepicker', this.outsideClick);
+        this.isShowing = false;
         this.element.trigger('hide.daterangepicker', this);
       },
 
@@ -549,10 +575,12 @@ define(function(require, exports, module) {
       showCalendars: function() {
         this.container.addClass('show-calendar');
         this.move();
+        this.element.trigger('showCalendar.daterangepicker', this);
       },
 
       hideCalendars: function() {
         this.container.removeClass('show-calendar');
+        this.element.trigger('hideCalendar.daterangepicker', this);
       },
 
       updateInputText: function() {
@@ -678,7 +706,8 @@ define(function(require, exports, module) {
         this.rightCalendar.month.month(this.endDate.month()).year(this.endDate.year());
         this.updateCalendars();
 
-        endDate.endOf('day');
+        if (!this.timePicker)
+          endDate.endOf('day');
 
         if (this.singleDatePicker)
           this.clickApply();
@@ -714,9 +743,9 @@ define(function(require, exports, module) {
       },
 
       updateTime: function(e) {
-        var isLeft = $(e.target).closest('.calendar').hasClass('left'),
-          leftOrRight = isLeft ? 'left' : 'right',
-          cal = this.container.find('.calendar.'+leftOrRight);
+
+        var cal = $(e.target).closest('.calendar'),
+          isLeft = cal.hasClass('left');
 
         var hour = parseInt(cal.find('.hourselect').val(), 10);
         var minute = parseInt(cal.find('.minuteselect').val(), 10);
@@ -904,7 +933,7 @@ define(function(require, exports, module) {
             var cname = 'available ';
             cname += (calendar[row][col].month() == calendar[1][1].month()) ? '' : 'off';
 
-            if ((minDate && calendar[row][col].isBefore(minDate)) || (maxDate && calendar[row][col].isAfter(maxDate))) {
+            if ((minDate && calendar[row][col].isBefore(minDate, 'day')) || (maxDate && calendar[row][col].isAfter(maxDate, 'day'))) {
               cname = ' off disabled ';
             } else if (calendar[row][col].format('YYYY-MM-DD') == selected.format('YYYY-MM-DD')) {
               cname += ' active ';
@@ -1011,6 +1040,4 @@ define(function(require, exports, module) {
     };
 
   }($, moment);
-
-
 });
