@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "jquery and its family members",
   "dependencies": {
-    "seajs": "*",
-    "mocha": "*",
+    "async": "*",
     "expect.js": "*",
-    "request": "*",
     "grunt": "*",
-    "async": "*"
+    "grunt-cmd-transport": "^0.4.1",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-wrap-combo": "^0.2.3",
+    "mocha": "*",
+    "request": "*",
+    "seajs": "*"
   },
   "spm": {
     "engines": {

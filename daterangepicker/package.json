@@ -1,7 +1,7 @@
 {
   "family": "jquery",
   "name": "daterangepicker",
-  "version": "1.3.8",
+  "version": "1.3.22",
   "description": "daterangepicker",
   "homepage": "https://github.com/dangrossman/bootstrap-daterangepicker",
   "author": "",
@@ -23,6 +23,8 @@
       "daterangepicker.css"
     ],
     "alias": {
+      "jquery": "jquery/jquery/2.1.0/jquery",
+      "moment": "gallery/moment/2.9.0/moment"
     },
     "devAlias": {},
     "engines": {}
