@@ -1,16 +1,18 @@
 {
-  "family": "jquery",
-  "name": "tooltip",
-  "version": "3.1.1",
+  "name": "jquery-tooltip",
+  "version": "3.1.2",
   "description": "jquery bootstrap tooltip",
-  "homepage": "https://github.com/jscmd/jquery.git",
+  "homepage": "https://github.com/twbs/bootstrap.git",
   "author": "",
   "maintainers": [
     ""
   ],
+  "owners": [
+    {"name": "lynzz"}
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jscmd/jquery.git"
+    "url": "https://github.com/twbs/bootstrap.git"
   },
   "bugs": {
     "url": ""
@@ -19,7 +21,7 @@
   "licenses": "MIT",
   "spm": {
     "output": [
-      "tooltip.js"
+      "jquery-tooltip.js"
     ],
     "alias": {},
     "devAlias": {},

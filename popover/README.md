@@ -1,26 +1,11 @@
-# popover
+# jquery-popover
 
 ---
 
-A nice CMD module.
+bootstrap popover
 
 ---
 
 ## Usage
 
-It is very easy to use this module.
-
-````html
-<div class="jquery-popover">
-</div>
-````
-
-```javascript
-seajs.use('popover', function(popover) {
-
-});
-```
-
-## Api
-
-Here is some details.
+见 [http://getbootstrap.com/javascript/#popover](http://getbootstrap.com/javascript/#popover)

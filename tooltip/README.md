@@ -1,26 +1,11 @@
-# tooltip
+# jquery-tooltip
 
 ---
 
-A nice CMD module.
+bootstrap tooltip
 
 ---
 
 ## Usage
 
-It is very easy to use this module.
-
-````html
-<div class="jquery-tooltip">
-</div>
-````
-
-```javascript
-seajs.use('tooltip', function(tooltip) {
-
-});
-```
-
-## Api
-
-Here is some details.
+见 [http://getbootstrap.com/javascript/#tooltips](http://getbootstrap.com/javascript/#tooltips)

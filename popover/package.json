@@ -1,16 +1,18 @@
 {
-  "family": "jquery",
-  "name": "popover",
-  "version": "3.1.1",
+  "name": "jquery-popover",
+  "version": "3.1.2",
   "description": "jquery bootstrap popover",
-  "homepage": "https://github.com/jscmd/jquery.git",
+  "homepage": "https://github.com/twbs/bootstrap.git",
   "author": "",
   "maintainers": [
     ""
   ],
+  "owners": [
+    {"name": "lynzz"}
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jscmd/jquery.git"
+    "url": "https://github.com/twbs/bootstrap.git"
   },
   "bugs": {
     "url": ""
@@ -18,11 +20,9 @@
   "keywords": [],
   "licenses": "MIT",
   "spm": {
-    "output": [
-      "popover.js"
-    ],
-    "alias": {
-      "tooltip": "jquery/tooltip/3.1.1/tooltip"
+    "main": "index.js",
+    "dependencies": {
+      "jquery-tooltip": "3.1.1"
     },
     "devAlias": {},
     "engines": {}
