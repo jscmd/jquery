@@ -21,10 +21,12 @@
   "licenses": "MIT",
   "spm": {
     "main": "index.js",
-    "buildArgs": "--ignore jquery",
+    "global": {
+      "jquery":"jQuery"
+    },
+    "ignore": "jquery",
     "dependencies": {
-      "jquery": "2.1.1",
-      "moment": "2.9.0"
+      "moment": "2.10.3"
     }
   }
 }

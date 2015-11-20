@@ -6,31 +6,8 @@
  * @website: https://www.improvely.com/
  */
 
-(function(root, factory) {
-
-  if (typeof define === 'function' && define.amd) {
-    define(['moment', 'jquery', 'exports'], function(momentjs, $, exports) {
-      root.daterangepicker = factory(root, exports, momentjs, $);
-    });
-
-  } else if (typeof exports !== 'undefined') {
-    var momentjs = require('moment');
-    var jQuery;
-    try {
-      jQuery = require('jquery');
-    } catch (err) {
-      jQuery = window.jQuery;
-      if (!jQuery) throw new Error('jQuery dependency not found');
-    }
-
-    factory(root, exports, momentjs, jQuery);
-
-    // Finally, as a browser global.
-  } else {
-    root.daterangepicker = factory(root, {}, root.moment || moment, (root.jQuery || root.Zepto || root.ender || root.$));
-  }
-
-}(this, function(root, daterangepicker, moment, $) {
+module.exports = function($) {
+  var moment = require('moment');
 
   var DateRangePicker = function (element, options, cb) {
 
@@ -329,7 +306,7 @@
       // bind the time zone used to build the calendar to either the timeZone passed in through the options or the zone of the startDate (which will be the local time zone by default)
       if (typeof options.timeZone === 'string' || typeof options.timeZone === 'number') {
         if (typeof options.timeZone === 'string' && typeof moment.tz !== 'undefined') {
-          this.timeZone = moment.tz.zone(options.timeZone).parse(new Date) * -1;	// Offset is positive if the timezone is behind UTC and negative if it is ahead.
+          this.timeZone = moment.tz.zone(options.timeZone).parse(new Date) * -1;  // Offset is positive if the timezone is behind UTC and negative if it is ahead.
         } else {
           this.timeZone = options.timeZone;
         }
@@ -1087,8 +1064,8 @@
       for (var m = 0; m < 12; m++) {
         if ((!inMinYear || m >= minDate.month()) && (!inMaxYear || m <= maxDate.month())) {
           monthHtml += "<option value='" + m + "'" +
-          (m === currentMonth ? " selected='selected'" : "") +
-          ">" + this.locale.monthNames[m] + "</option>";
+            (m === currentMonth ? " selected='selected'" : "") +
+            ">" + this.locale.monthNames[m] + "</option>";
         }
       }
       monthHtml += "</select>";
@@ -1097,8 +1074,8 @@
 
       for (var y = minYear; y <= maxYear; y++) {
         yearHtml += '<option value="' + y + '"' +
-        (y === currentYear ? ' selected="selected"' : '') +
-        '>' + y + '</option>';
+          (y === currentYear ? ' selected="selected"' : '') +
+          '>' + y + '</option>';
       }
 
       yearHtml += '</select>';
@@ -1336,6 +1313,7 @@
 
   };
 
+  var old = $.fn.daterangepicker;
   $.fn.daterangepicker = function (options, cb) {
     this.each(function () {
       var el = $(this);
@@ -1345,6 +1323,11 @@
     });
     return this;
   };
+  $.fn.daterangepicker.noConflict = function() {
+    $.fn.daterangepicker = old;
+    return this;
+  };
 
-}));
+};
+
 
