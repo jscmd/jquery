@@ -21,10 +21,6 @@
   "licenses": "MIT",
   "spm": {
     "main": "index.js",
-    "global": {
-      "jquery":"jQuery"
-    },
-    "ignore": "jquery",
     "dependencies": {
       "moment": "2.10.3"
     }
